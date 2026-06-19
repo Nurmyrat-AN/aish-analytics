@@ -9,7 +9,13 @@ function makeTransactionId(zarfId, sourceType, index, subIndex = 0) {
   return `${zarfId}-${sourceType}-${index}-${subIndex}`;
 }
 
+let yanlisSayisi = 0;
+
 function mapFatura(zarf, fatura, index) {
+  if (fatura.sluj_isYanlis === 1) {
+    yanlisSayisi++
+  }
+  console.log('Yanlis Sayisi: ', yanlisSayisi)
   return {
     id: makeTransactionId(zarf._id, "fatura", index),
 
