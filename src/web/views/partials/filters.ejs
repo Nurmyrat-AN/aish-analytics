@@ -1,0 +1,25 @@
+<form method="GET" action="<%= filters.action %>" class="filter-bar">
+  <% filters.items.forEach(item => { %>
+    <% if (item.type === "hidden") { %>
+      <input type="hidden" name="<%= item.name %>" value="<%= item.value %>" />
+    <% } %>
+
+    <% if (item.type === "select") { %>
+      <div class="filter-field">
+        <label><%= item.label %></label>
+        <select class="input" name="<%= item.name %>">
+          <% item.options.forEach(opt => { %>
+            <option value="<%= opt[0] %>" <%= String(item.value) === String(opt[0]) ? "selected" : "" %>>
+              <%= opt[1] %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+    <% } %>
+  <% }) %>
+
+  <div class="filter-actions">
+    <button class="btn" type="submit">Применить</button>
+    <a class="btn btn-light" href="<%= filters.action %>">Сбросить</a>
+  </div>
+</form>

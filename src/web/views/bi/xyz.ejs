@@ -1,0 +1,54 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+  maximumFractionDigits: 2 }); } function cls(x) { return x==="X" ? "badge-success" : x==="Y" ? "badge-warning"
+  : "badge-danger" ; } %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>XYZ анализ</h1>
+        <p>Стабильность спроса по товарам</p>
+      </div>
+
+      <form method="GET" action="/bi/xyz" class="period-form">
+        <select class="input" name="period" onchange="this.form.submit()">
+          <option value="LAST_30_DAYS" ${period==="LAST_30_DAYS" ? "selected" : "" }>Последние 30 дней</option>
+          <option value="LAST_90_DAYS" ${period==="LAST_90_DAYS" ? "selected" : "" }>Последние 90 дней</option>
+          <option value="LAST_180_DAYS" ${period==="LAST_180_DAYS" ? "selected" : "" }>Последние 180 дней</option>
+          <option value="LAST_365_DAYS" ${period==="LAST_365_DAYS" ? "selected" : "" }>Последние 365 дней</option>
+        </select>
+      </form>
+    </div>
+
+    ${include("./partials/bibar", { active: 'xyz', period })}
+
+    <div class="card">
+      <h3>Результат XYZ</h3>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Класс</th>
+            <th>Товар</th>
+            <th>Итого</th>
+            <th>Среднее</th>
+            <th>Отклонение</th>
+            <th>CV %</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(x => `
+          <tr>
+            <td><span class="badge ${cls(x.xyz_class)}">${x.xyz_class}</span></td>
+            <td>${x.urun_adi}</td>
+            <td>${money(x.total)}</td>
+            <td>${money(x.average)}</td>
+            <td>${money(x.stddev)}</td>
+            <td>${money(x.cv)}%</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    </section>
+    `
+    }) %>

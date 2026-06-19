@@ -1,0 +1,16 @@
+:root {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f0f3f8;
+
+  --text: #111827;
+  --muted: #6b7280;
+
+  --primary: #2563eb;
+  --border: #d9dee8;
+
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  --topbar-height: 56px;
+}

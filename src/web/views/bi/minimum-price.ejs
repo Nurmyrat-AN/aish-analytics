@@ -1,0 +1,73 @@
+<%
+function money(value) {
+  return Number(value || 0).toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+%>
+
+<%- include("../layouts/main", {
+  title,
+  activeMenu,
+  body: `
+    <section class="page">
+      <div class="page-header">
+        <div>
+          <h1>Продажи ниже минимальной цены</h1>
+          <p>Контроль нарушений minimumSatisFiyati</p>
+        </div>
+
+        <form method="GET" action="/bi/minimum-price" class="period-form">
+          <select class="input" name="period" onchange="this.form.submit()">
+            <option value="TODAY" ${period === "TODAY" ? "selected" : ""}>Сегодня</option>
+            <option value="THIS_MONTH" ${period === "THIS_MONTH" ? "selected" : ""}>Этот месяц</option>
+            <option value="LAST_30_DAYS" ${period === "LAST_30_DAYS" ? "selected" : ""}>Последние 30 дней</option>
+            <option value="LAST_90_DAYS" ${period === "LAST_90_DAYS" ? "selected" : ""}>Последние 90 дней</option>
+            <option value="LAST_180_DAYS" ${period === "LAST_180_DAYS" ? "selected" : ""}>Последние 180 дней</option>
+            <option value="LAST_365_DAYS" ${period === "LAST_365_DAYS" ? "selected" : ""}>Последние 365 дней</option>
+          </select>
+        </form>
+      </div>
+
+      ${include("./partials/bibar", { active: 'minimum-price', period })}
+
+      <div class="card">
+        <h3>Нарушения</h3>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Код</th>
+              <th>Товар</th>
+              <th>Клиент</th>
+              <th>Продавец</th>
+              <th>Склад</th>
+              <th>Цена</th>
+              <th>Мин. цена</th>
+              <th>Кол-во</th>
+              <th>Потеря</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(x => `
+              <tr>
+                <td>${x.operation_date || ""}</td>
+                <td>${x.kodu_txt || ""}</td>
+                <td>${x.urun_adi}</td>
+                <td>${x.kagent_adi}</td>
+                <td>${x.satici_adi}</td>
+                <td>${x.depo_adi}</td>
+                <td>${money(x.unit_price_given)}</td>
+                <td>${money(x.minimum_satis_fiyati)}</td>
+                <td>${money(x.base_unit_qty_total)}</td>
+                <td class="text-danger">${money(x.loss_amount)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `
+}) %>

@@ -1,0 +1,15 @@
+<header class="topbar">
+  <div class="topbar__brand">Analytics</div>
+
+  <nav class="topbar__nav">
+    <a class="topbar__link <%= activeMenu === 'dashboard' ? 'is-active' : '' %>" href="/">Дашборд</a>
+    <a class="topbar__link <%= activeMenu === 'sales' ? 'is-active' : '' %>" href="/sales">Продажи</a>
+    <a class="topbar__link <%= activeMenu === 'products' ? 'is-active' : '' %>" href="/products">Товары</a>
+    <a class="topbar__link <%= activeMenu === 'customers' ? 'is-active' : '' %>" href="/customers">Клиенты</a>
+    <a class="topbar__link <%= activeMenu === 'warehouse' ? 'is-active' : '' %>" href="/warehouse">Склад</a>
+    <a class="topbar__link <%= activeMenu === 'cash' ? 'is-active' : '' %>" href="/cash">Касса</a>
+    <a class="topbar__link <%= activeMenu === 'bi' ? 'is-active' : '' %>" href="/bi/abc">BI</a>
+    <a class="topbar__link <%= activeMenu === 'profit' ? 'is-active' : '' %>" href="/profit">Прибыль</a>
+    <a class="topbar__link <%= activeMenu === 'settings' ? 'is-active' : '' %>" href="/settings">Настройки</a>
+  </nav>
+</header>

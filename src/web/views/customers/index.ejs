@@ -1,0 +1,107 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+  maximumFractionDigits: 2 }); } function isActive(name) { return tab===name ? "is-active" : "" ; } %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>Клиенты</h1>
+        <p>Долги, продажи и история операций</p>
+      </div>
+
+      ${include("../partials/filters", { filters })}
+    </div>
+
+    <div class="tabs">
+      <a class="tab ${isActive(" balance")}" href="/customers?tab=balance&period=${period}">Долги</a>
+      <a class="tab ${isActive(" sales")}" href="/customers?tab=sales&period=${period}">Продажи</a>
+      <a class="tab ${isActive(" statement")}" href="/customers?tab=statement&period=${period}">История</a>
+    </div>
+
+    ${
+    tab === "balance" ? `
+    <div class="card">
+      <h3>Долги клиентов</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Клиент</th>
+            <th>Баланс</th>
+            <th>Операций</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${balance.map(x => `
+          <tr>
+            <td>${x.kagent_adi}</td>
+            <td class="${Number(x.balance) < 0 ? " text-danger" : "" }">${money(x.balance)}</td>
+            <td>${x.operation_count}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "sales" ? `
+    <div class="card">
+      <h3>Продажи по клиентам</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Клиент</th>
+            <th>Сумма</th>
+            <th>Чеки</th>
+            <th>Средний чек</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sales.map(x => `
+          <tr>
+            <td>${x.kagent_adi}</td>
+            <td>${money(x.total_amount)}</td>
+            <td>${x.check_count}</td>
+            <td>${money(x.avg_check)}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "statement" ? `
+    <div class="card">
+      <h3>История операций</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Клиент</th>
+            <th>Тип</th>
+            <th>Код</th>
+            <th>Сумма</th>
+            <th>Влияние</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${statement.map(x => `
+          <tr>
+            <td>${x.operation_date || ""}</td>
+            <td>${x.kagent_adi}</td>
+            <td>${x.type_name || x.type_numeric}</td>
+            <td>${x.kodu_txt || ""}</td>
+            <td>${money(x.amount)}</td>
+            <td>${money(x.balance_effect)}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+    </section>
+    `
+    }) %>

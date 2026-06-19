@@ -1,0 +1,174 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+  maximumFractionDigits: 2 }); } %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>Продажи</h1>
+        <p>Анализ продаж</p>
+      </div>
+      ${include("../partials/filters", { filters })}
+    </div>
+
+    <div class="grid grid-4">
+      <div class="card">
+        <div class="card__label">Сумма продаж</div>
+        <div class="card__value">${money(summary.total_amount)}</div>
+      </div>
+
+      <div class="card">
+        <div class="card__label">Чеки</div>
+        <div class="card__value">${summary.check_count}</div>
+      </div>
+
+      <div class="card">
+        <div class="card__label">Средний чек</div>
+        <div class="card__value">${money(summary.avg_check)}</div>
+      </div>
+
+      <div class="card">
+        <div class="card__label">Ниже минимальной цены</div>
+        <div class="card__value">${belowMinimumPrice.length}</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <div class="card">
+        <h3>Продажи по дням</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Сумма</th>
+              <th>Чеки</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${byDay.map(x => `
+            <tr>
+              <td>${x.day}</td>
+              <td>${money(x.total_amount)}</td>
+              <td>${x.check_count}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>По складам</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Склад</th>
+              <th>Сумма</th>
+              <th>Чеки</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${byWarehouse.map(x => `
+            <tr>
+              <td>${x.depo_adi}</td>
+              <td>${money(x.total_amount)}</td>
+              <td>${x.check_count}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Топ товары</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Товар</th>
+              <th>Сумма</th>
+              <th>Кол-во</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${byProduct.map(x => `
+            <tr>
+              <td>${x.urun_adi}</td>
+              <td>${money(x.total_amount)}</td>
+              <td>${money(x.qty)}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Топ клиенты</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Клиент</th>
+              <th>Сумма</th>
+              <th>Чеки</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${byCustomer.map(x => `
+            <tr>
+              <td>${x.kagent_adi}</td>
+              <td>${money(x.total_amount)}</td>
+              <td>${x.check_count}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Топ продавцы</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Продавец</th>
+              <th>Сумма</th>
+              <th>Чеки</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${bySeller.map(x => `
+            <tr>
+              <td>${x.satici_adi}</td>
+              <td>${money(x.total_amount)}</td>
+              <td>${x.check_count}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h3>Продажи ниже минимальной цены</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Товар</th>
+              <th>Цена</th>
+              <th>Мин.</th>
+              <th>Потеря</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${belowMinimumPrice.map(x => `
+            <tr>
+              <td>${x.operation_date}</td>
+              <td>${x.urun_adi}</td>
+              <td>${money(x.unit_price_given)}</td>
+              <td>${money(x.minimum_satis_fiyati)}</td>
+              <td>${money(x.loss_amount)}</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </section>
+    `
+    }) %>

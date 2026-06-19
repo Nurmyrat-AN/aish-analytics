@@ -1,0 +1,31 @@
+{
+  "name": "aish-analitics",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "node src/app.js",
+    "migrate": "node src/database/migrate.js",
+    "seed:transaction-types": "node src/database/seedTransactionTypes.js",
+    "sync": "node src/sync/index.js",
+    "db": "sqlite3 data/analytics.db",
+    "currency:test": "node src/currency/testCurrencyService.js",
+    "db:clear": "node src/database/resetLocalDb.js",
+    "seed:app-settings": "node src/database/seedAppSettings.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "nano": "^11.0.5",
+    "pouchdb": "^9.0.0",
+    "pouchdb-adapter-http": "^9.0.0",
+    "pouchdb-find": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}

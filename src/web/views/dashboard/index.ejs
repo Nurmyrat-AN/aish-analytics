@@ -1,0 +1,282 @@
+<% const d=dashboard; const c=dashboard.currencyName; function money(value) { return Number(value ||
+    0).toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); } function list(items,
+    valueKey="amount" , nameKey="name" ) { if (!items || !items.length) return "<div class='muted'>Нет данных</div>" ;
+    return ` <div class="tooltip-list">
+    ${items.map(x => `
+    <div class="tooltip-row">
+        <span>${x[nameKey] || "—"}</span>
+        <strong>${money(x[valueKey])}</strong>
+    </div>
+    `).join("")}
+    </div>
+    `;
+    }
+    %>
+
+    <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Обзор за сегодня</p>
+            </div>
+            <form method="GET" action="/" class="period-form">
+                <select class="input" name="period" onchange="this.form.submit()">
+                    <option value="TODAY" ${period==="TODAY" ? "selected" : "" }>Сегодня</option>
+                    <option value="YESTERDAY" ${period==="YESTERDAY" ? "selected" : "" }>Вчера</option>
+                    <option value="THIS_MONTH" ${period==="THIS_MONTH" ? "selected" : "" }>Этот месяц</option>
+                    <option value="LAST_30_DAYS" ${period==="LAST_30_DAYS" ? "selected" : "" }>Последние 30 дней
+                    </option>
+                    <option value="LAST_90_DAYS" ${period==="LAST_90_DAYS" ? "selected" : "" }>Последние 90 дней
+                    </option>
+                    <option value="LAST_180_DAYS" ${period==="LAST_180_DAYS" ? "selected" : "" }>Последние 180 дней
+                    </option>
+                    <option value="LAST_365_DAYS" ${period==="LAST_365_DAYS" ? "selected" : "" }>Последние 365 дней
+                    </option>
+                </select>
+            </form>
+        </div>
+
+        <div class="grid grid-4">
+            <div class="card metric-card">
+                <div class="card__label">Продажи</div>
+                <div class="card__value">${money(d.cards.sales.totalSales)} ${c}</div>
+                <div class="metric-tooltip">
+                    <h4>По складам</h4>
+                    ${list(d.details.salesByWarehouse)}
+                </div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Прибыль CARD</div>
+                <div class="card__value">${money(d.cards.profit)} ${c}</div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Чеки</div>
+                <div class="card__value">${d.cards.sales.checkCount}</div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Средний чек</div>
+                <div class="card__value">${money(d.cards.sales.avgCheck)} ${c}</div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Возвраты</div>
+                <div class="card__value">${money(d.cards.returns)} ${c}</div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Деньги в кассах</div>
+                <div class="card__value">${money(d.cards.cash.totalBase)} ${c}</div>
+                <div class="metric-tooltip">
+                    <h4>По кассам</h4>
+                    ${
+                    d.details.cash && d.details.cash.length
+                    ? d.details.cash.map(x => `
+                    <div class="tooltip-row">
+                        <span>${x.defter_name}</span>
+                        <strong>${money(x.balance)} ${x.currency_name}</strong>
+                    </div>
+                    `).join("")
+                    : "<div class='muted'>Нет данных</div>"
+                    }
+                </div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Долги клиентов</div>
+                <div class="card__value">${money(d.cards.debt.total)} ${c}</div>
+                <div class="metric-tooltip">
+                    <h4>Топ долгов</h4>
+                    ${
+                    d.details.debt && d.details.debt.length
+                    ? d.details.debt.map(x => `
+                    <div class="tooltip-row">
+                        <span>${x.kagent_name}</span>
+                        <strong>${money(x.balance)}</strong>
+                    </div>
+                    `).join("")
+                    : "<div class='muted'>Нет данных</div>"
+                    }
+                </div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Минусовые остатки</div>
+                <div class="card__value">${d.cards.negativeStockCount}</div>
+            </div>
+
+            <div class="card metric-card">
+                <div class="card__label">Ниже минимальной цены</div>
+                <div class="card__value">${d.cards.belowMin.count}</div>
+                <div class="card__subvalue">Потеря: ${money(d.cards.belowMin.lossAmount)} ${c}</div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3>Продажи по дням</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Сумма</th>
+                            <th>Чеки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${d.details.salesByDay.map(x => `
+                        <tr>
+                            <td>${x.day}</td>
+                            <td>${money(x.amount)} ${c}</td>
+                            <td>${x.checks}</td>
+                        </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Топ товары</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Сумма</th>
+                            <th>Кол-во</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${d.details.topProducts.map(x => `
+                        <tr>
+                            <td>${x.name}</td>
+                            <td>${money(x.amount)} ${c}</td>
+                            <td>${money(x.qty)}</td>
+                        </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Топ клиенты</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Клиент</th>
+                            <th>Сумма</th>
+                            <th>Чеки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${d.details.topCustomers.map(x => `
+                        <tr>
+                            <td>${x.name}</td>
+                            <td>${money(x.amount)} ${c}</td>
+                            <td>${x.checks}</td>
+                        </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Топ продавцы</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Продавец</th>
+                            <th>Сумма</th>
+                            <th>Чеки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${d.details.topSellers.map(x => `
+                        <tr>
+                            <td>${x.name}</td>
+                            <td>${money(x.amount)} ${c}</td>
+                            <td>${x.checks}</td>
+                        </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card mt-16">
+            <h3>Последние операции</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Тип</th>
+                        <th>Код</th>
+                        <th>Клиент</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${d.details.latestOperations.map(x => `
+                    <tr>
+                        <td>${x.operation_date || ""}</td>
+                        <td>${x.source_type} / ${x.type_numeric}</td>
+                        <td>${x.kodu_txt || ""}</td>
+                        <td>${x.kagent_name || ""}</td>
+                        <td>${money(x.amount)} ${c}</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+
+        </section>
+        `
+        }) %>

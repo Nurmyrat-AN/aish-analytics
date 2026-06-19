@@ -1,0 +1,75 @@
+<form method="GET" action="<%= action %>" class="filter-bar">
+  <% if (tab) { %>
+    <input type="hidden" name="tab" value="<%= tab %>" />
+    <% } %>
+
+      <div class="filter-field">
+        <label>Период</label>
+        <select class="input" name="period">
+          <option value="TODAY" <%=period==="TODAY" ? "selected" : "" %>>Сегодня</option>
+          <option value="YESTERDAY" <%=period==="YESTERDAY" ? "selected" : "" %>>Вчера</option>
+          <option value="THIS_MONTH" <%=period==="THIS_MONTH" ? "selected" : "" %>>Этот месяц</option>
+          <option value="LAST_30_DAYS" <%=period==="LAST_30_DAYS" ? "selected" : "" %>> Последние 30 дней</option>
+          <option value="LAST_90_DAYS" <%=period==="LAST_90_DAYS" ? "selected" : "" %>> Последние 90 дней</option>
+          <option value="LAST_180_DAYS" <%=period==="LAST_180_DAYS" ? "selected" : "" %>> Последние 180 дней</option>
+          <option value="LAST_365_DAYS" <%=period==="LAST_365_DAYS" ? "selected" : "" %>> Последние 365 дней</option>
+        </select>
+      </div>
+
+      <% if (showDepo) { %>
+        <div class="filter-field">
+          <label>Склад</label>
+          <select class="input" name="depoId">
+            <option value="">Все</option>
+            <% depoOptions.forEach(x=> { %>
+              <option value="<%= x.id %>" <%=depoId===x.id ? "selected" : "" %>><%= x.adi %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+        <% } %>
+
+          <% if (showKagent) { %>
+            <div class="filter-field">
+              <label>Клиент</label>
+              <select class="input" name="kagentId">
+                <option value="">Все</option>
+                <% kagentOptions.forEach(x=> { %>
+                  <option value="<%= x.id %>" <%=kagentId===x.id ? "selected" : "" %>><%= x.adi %>
+                  </option>
+                  <% }) %>
+              </select>
+            </div>
+            <% } %>
+
+              <% if (showUrun) { %>
+                <div class="filter-field">
+                  <label>Товар</label>
+                  <select class="input" name="urunId">
+                    <option value="">Все</option>
+                    <% urunOptions.forEach(x=> { %>
+                      <option value="<%= x.id %>" <%=urunId===x.id ? "selected" : "" %>><%= x.adi %>
+                      </option>
+                      <% }) %>
+                  </select>
+                </div>
+                <% } %>
+
+                  <% if (showSatici) { %>
+                    <div class="filter-field">
+                      <label>Продавец</label>
+                      <select class="input" name="saticiId">
+                        <option value="">Все</option>
+                        <% saticiOptions.forEach(x=> { %>
+                          <option value="<%= x.id %>" <%=saticiId===x.id ? "selected" : "" %>><%= x.adi %>
+                          </option>
+                          <% }) %>
+                      </select>
+                    </div>
+                    <% } %>
+
+                      <div class="filter-actions">
+                        <button class="btn" type="submit">Применить</button>
+                        <a class="btn btn-light" href="<%= action %>">Сбросить</a>
+                      </div>
+</form>

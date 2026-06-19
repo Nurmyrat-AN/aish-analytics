@@ -1,0 +1,61 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+  maximumFractionDigits: 2 }); } function abcCls(x) { return x==="A" ? "badge-success" : x==="B" ? "badge-warning"
+  : "badge-danger" ; } function xyzCls(x) { return x==="X" ? "badge-success" : x==="Y" ? "badge-warning"
+  : "badge-danger" ; } %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>ABC × XYZ</h1>
+        <p>Матрица важности и стабильности спроса</p>
+      </div>
+
+      <form method="GET" action="/bi/abc-xyz" class="period-form">
+        <select class="input" name="period" onchange="this.form.submit()">
+          <option value="LAST_30_DAYS" ${period==="LAST_30_DAYS" ? "selected" : "" }>Последние 30 дней</option>
+          <option value="LAST_90_DAYS" ${period==="LAST_90_DAYS" ? "selected" : "" }>Последние 90 дней</option>
+          <option value="LAST_180_DAYS" ${period==="LAST_180_DAYS" ? "selected" : "" }>Последние 180 дней</option>
+          <option value="LAST_365_DAYS" ${period==="LAST_365_DAYS" ? "selected" : "" }>Последние 365 дней</option>
+        </select>
+      </form>
+    </div>
+
+    ${include("./partials/bibar", { active: 'abc-xyz', period })}
+
+      <div class="card">
+        <h3>Матрица ABC × XYZ</h3>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Матрица</th>
+              <th>ABC</th>
+              <th>XYZ</th>
+              <th>Товар</th>
+              <th>Выручка</th>
+              <th>Прибыль</th>
+              <th>Кол-во</th>
+              <th>ABC %</th>
+              <th>CV %</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(x => `
+            <tr>
+              <td><strong>${x.matrix_class}</strong></td>
+              <td><span class="badge ${abcCls(x.abc_class)}">${x.abc_class}</span></td>
+              <td><span class="badge ${xyzCls(x.xyz_class)}">${x.xyz_class}</span></td>
+              <td>${x.urun_adi}</td>
+              <td>${money(x.revenue)}</td>
+              <td>${money(x.profit)}</td>
+              <td>${money(x.qty)}</td>
+              <td>${money(x.abc_cumulative_percent)}%</td>
+              <td>${money(x.xyz_cv)}%</td>
+            </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+      </section>
+      `
+      }) %>

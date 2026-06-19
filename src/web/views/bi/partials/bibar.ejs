@@ -1,0 +1,11 @@
+<%- ` <div class="tabs">
+  <a class="tab ${active === 'abc' ? 'is-active' : ''}" href="/bi/abc?period=${period}">ABC</a>
+  <a class="tab ${active === 'xyz' ? 'is-active' : ''}" href="/bi/xyz?period=${period}">XYZ</a>
+  <a class="tab ${active === 'abc-xyz' ? 'is-active' : ''}" href="/bi/abc-xyz?period=${period}">ABC × XYZ</a>
+  <a class="tab ${active === 'minimum-price' ? 'is-active' : ''}" href="/bi/minimum-price?period=${period}">Ниже
+    минимума</a>
+  <a class="tab ${active === 'slow-moving' ? 'is-active' : ''}" href="/bi/slow-moving?period=${period}">Медленно продающиеся</a>
+  </div>
+  <a class="tab ${active === 'dead-stock' ? 'is-active' : ''}" href="/bi/dead-stock?days=${period}">Мертвый запас</a>
+  `
+  %>

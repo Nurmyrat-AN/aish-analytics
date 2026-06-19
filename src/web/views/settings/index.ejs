@@ -1,0 +1,134 @@
+<% function renderInput(s) { const value=s.value || "" ; if (s.value_type==="boolean" ) { return ` <select class="input"
+  name="${s.key}">
+  <option value="true" ${value==="true" ? "selected" : "" }>true</option>
+  <option value="false" ${value==="false" ? "selected" : "" }>false</option>
+  </select>
+  `;
+  }
+
+  if (s.key.includes("_color_") || s.key.endsWith("_color")) {
+  return `
+  <div class="color-input">
+    <input type="color" name="${s.key}" value="${value || " #000000"}" />
+    <span>${value}</span>
+  </div>
+  `;
+  }
+
+  if (s.key === "profit_calculation_method") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="CARD" ${value==="CARD" ? "selected" : "" }>CARD</option>
+    <option value="FIFO" ${value==="FIFO" ? "selected" : "" }>FIFO</option>
+    <option value="LIFO" ${value==="LIFO" ? "selected" : "" }>LIFO</option>
+  </select>
+  `;
+  }
+
+  if (s.key === "inventory_cost_inbound_scope") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="PURCHASE_ONLY" ${value==="PURCHASE_ONLY" ? "selected" : "" }>PURCHASE_ONLY</option>
+    <option value="ALL_INBOUND" ${value==="ALL_INBOUND" ? "selected" : "" }>ALL_INBOUND</option>
+  </select>
+  `;
+  }
+
+  if (s.key === "default_date_range") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="TODAY" ${value==="TODAY" ? "selected" : "" }>Today</option>
+    <option value="YESTERDAY" ${value==="YESTERDAY" ? "selected" : "" }>Yesterday</option>
+
+    <option value="THIS_WEEK" ${value==="THIS_WEEK" ? "selected" : "" }>This Week</option>
+    <option value="LAST_WEEK" ${value==="LAST_WEEK" ? "selected" : "" }>Last Week</option>
+
+    <option value="THIS_MONTH" ${value==="THIS_MONTH" ? "selected" : "" }>This Month</option>
+    <option value="LAST_MONTH" ${value==="LAST_MONTH" ? "selected" : "" }>Last Month</option>
+
+    <option value="THIS_YEAR" ${value==="THIS_YEAR" ? "selected" : "" }>This Year</option>
+    <option value="LAST_YEAR" ${value==="LAST_YEAR" ? "selected" : "" }>Last Year</option>
+
+    <option value="LAST_7_DAYS" ${value==="LAST_7_DAYS" ? "selected" : "" }>Last 7 Days</option>
+    <option value="LAST_30_DAYS" ${value==="LAST_30_DAYS" ? "selected" : "" }>Last 30 Days</option>
+    <option value="LAST_90_DAYS" ${value==="LAST_90_DAYS" ? "selected" : "" }>Last 90 Days</option>
+    <option value="LAST_180_DAYS" ${value==="LAST_180_DAYS" ? "selected" : "" }>Last 180 Days</option>
+    <option value="LAST_365_DAYS" ${value==="LAST_365_DAYS" ? "selected" : "" }>Last 365 Days</option>
+
+    <option value="ALL_TIME" ${value==="ALL_TIME" ? "selected" : "" }>All Time</option>
+  </select>
+  `;
+  }
+  if (s.key === "abc_calculation_basis" || s.key === "xyz_calculation_basis") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="PROFIT" ${value==="PROFIT" ? "selected" : "" }>Прибыль</option>
+    <option value="REVENUE" ${value==="REVENUE" ? "selected" : "" }>Выручка</option>
+    <option value="QUANTITY" ${value==="QUANTITY" ? "selected" : "" }>Количество</option>
+  </select>
+  `;
+  }
+
+  if (s.key === "abc_period" || s.key === "xyz_period" || s.key === "default_date_range") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="TODAY" ${value==="TODAY" ? "selected" : "" }>Сегодня</option>
+    <option value="THIS_MONTH" ${value==="THIS_MONTH" ? "selected" : "" }>Этот месяц</option>
+    <option value="LAST_30_DAYS" ${value==="LAST_30_DAYS" ? "selected" : "" }>Последние 30 дней</option>
+    <option value="LAST_90_DAYS" ${value==="LAST_90_DAYS" ? "selected" : "" }>Последние 90 дней</option>
+    <option value="LAST_180_DAYS" ${value==="LAST_180_DAYS" ? "selected" : "" }>Последние 180 дней</option>
+    <option value="LAST_365_DAYS" ${value==="LAST_365_DAYS" ? "selected" : "" }>Последние 365 дней</option>
+    <option value="ALL_TIME" ${value==="ALL_TIME" ? "selected" : "" }>Всё время</option>
+  </select>
+  `;
+  }
+
+  if (s.key === "xyz_bucket") {
+  return `
+  <select class="input" name="${s.key}">
+    <option value="DAY" ${value==="DAY" ? "selected" : "" }>День</option>
+    <option value="WEEK" ${value==="WEEK" ? "selected" : "" }>Неделя</option>
+    <option value="MONTH" ${value==="MONTH" ? "selected" : "" }>Месяц</option>
+  </select>
+  `;
+  }
+
+  return `<input class="input" name="${s.key}" value="${value}" />`;
+  }
+  %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>Settings</h1>
+        <p>Настройки аналитики и отчётов</p>
+      </div>
+    </div>
+
+    <form method="POST" action="/settings" class="card">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Key</th>
+            <th>Value</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${settings.map(s => `
+          <tr>
+            <td><code>${s.key}</code></td>
+            <td>${renderInput(s)}</td>
+            <td>${s.description || ""}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+
+      <div style="margin-top:16px">
+        <button class="btn" type="submit">Save settings</button>
+      </div>
+    </form>
+    </section>
+    `
+    }) %>

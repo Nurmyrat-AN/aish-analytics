@@ -1,0 +1,149 @@
+<%
+function money(value) {
+  return Number(value || 0).toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function isActive(name) {
+  return tab === name ? "is-active" : "";
+}
+
+function movementTable(rows) {
+  return `
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Код</th>
+          <th>Тип</th>
+          <th>Склад</th>
+          <th>Товар</th>
+          <th>Кол-во</th>
+          <th>Влияние</th>
+          <th>Сумма</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.map(x => `
+          <tr>
+            <td>${x.operation_date || ""}</td>
+            <td>${x.kodu_txt || ""}</td>
+            <td>${x.type_name || x.type_numeric}</td>
+            <td>${x.depo_adi}</td>
+            <td>${x.urun_adi}</td>
+            <td>${money(x.qty)}</td>
+            <td class="${Number(x.qty_effect) < 0 ? "text-danger" : ""}">${money(x.qty_effect)}</td>
+            <td>${money(x.line_total)}</td>
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+}
+%>
+
+<%- include("../layouts/main", {
+  title,
+  activeMenu,
+  body: `
+    <section class="page">
+      <div class="page-header">
+        <div>
+          <h1>Склад</h1>
+          <p>Остатки и движение товаров по складам</p>
+        </div>
+
+        ${include("../partials/filters", { filters })}
+      </div>
+
+      <div class="tabs">
+        <a class="tab ${isActive("stock")}" href="/warehouse?tab=stock&period=${period}">Остатки</a>
+        <a class="tab ${isActive("negative")}" href="/warehouse?tab=negative&period=${period}">Минусовые остатки</a>
+        <a class="tab ${isActive("movement")}" href="/warehouse?tab=movement&period=${period}">Движение</a>
+        <a class="tab ${isActive("inbound")}" href="/warehouse?tab=inbound&period=${period}">Входы</a>
+        <a class="tab ${isActive("outbound")}" href="/warehouse?tab=outbound&period=${period}">Выходы</a>
+      </div>
+
+      ${
+        tab === "stock" ? `
+          <div class="card">
+            <h3>Остатки</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Склад</th>
+                  <th>Товар</th>
+                  <th>Остаток</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${stock.map(x => `
+                  <tr>
+                    <td>${x.depo_adi}</td>
+                    <td>${x.urun_adi}</td>
+                    <td class="${Number(x.qty) < 0 ? "text-danger" : ""}">${money(x.qty)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "negative" ? `
+          <div class="card">
+            <h3>Минусовые остатки</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Склад</th>
+                  <th>Товар</th>
+                  <th>Остаток</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${negativeStock.map(x => `
+                  <tr>
+                    <td>${x.depo_adi}</td>
+                    <td>${x.urun_adi}</td>
+                    <td class="text-danger">${money(x.qty)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "movement" ? `
+          <div class="card">
+            <h3>Движение</h3>
+            ${movementTable(movement)}
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "inbound" ? `
+          <div class="card">
+            <h3>Входы</h3>
+            ${movementTable(inbound)}
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "outbound" ? `
+          <div class="card">
+            <h3>Выходы</h3>
+            ${movementTable(outbound)}
+          </div>
+        ` : ""
+      }
+    </section>
+  `
+}) %>

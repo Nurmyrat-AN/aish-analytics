@@ -1,0 +1,71 @@
+<%
+function money(value) {
+  return Number(value || 0).toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function cls(x) {
+  return x === "A" ? "badge-success" : x === "B" ? "badge-warning" : "badge-danger";
+}
+%>
+
+<%- include("../layouts/main", {
+  title,
+  activeMenu,
+  body: `
+    <section class="page">
+      <div class="page-header">
+        <div>
+          <h1>ABC анализ</h1>
+          <p>Классификация товаров по вкладу в выбранный показатель</p>
+        </div>
+
+        <form method="GET" action="/bi/abc" class="period-form">
+          <select class="input" name="period" onchange="this.form.submit()">
+            <option value="THIS_MONTH" ${period === "THIS_MONTH" ? "selected" : ""}>Этот месяц</option>
+            <option value="LAST_30_DAYS" ${period === "LAST_30_DAYS" ? "selected" : ""}>Последние 30 дней</option>
+            <option value="LAST_90_DAYS" ${period === "LAST_90_DAYS" ? "selected" : ""}>Последние 90 дней</option>
+            <option value="LAST_180_DAYS" ${period === "LAST_180_DAYS" ? "selected" : ""}>Последние 180 дней</option>
+            <option value="LAST_365_DAYS" ${period === "LAST_365_DAYS" ? "selected" : ""}>Последние 365 дней</option>
+            <option value="ALL_TIME" ${period === "ALL_TIME" ? "selected" : ""}>Всё время</option>
+          </select>
+        </form>
+      </div>
+
+      ${include("./partials/bibar", { active: 'abc', period })}
+
+      <div class="card">
+        <h3>Результат ABC</h3>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Класс</th>
+              <th>Товар</th>
+              <th>Показатель</th>
+              <th>Выручка</th>
+              <th>Прибыль</th>
+              <th>Кол-во</th>
+              <th>Накопительно %</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(x => `
+              <tr>
+                <td><span class="badge ${cls(x.abc_class)}">${x.abc_class}</span></td>
+                <td>${x.urun_adi}</td>
+                <td>${money(x.metric_value)}</td>
+                <td>${money(x.revenue)}</td>
+                <td>${money(x.profit)}</td>
+                <td>${money(x.qty)}</td>
+                <td>${money(x.cumulative_percent)}%</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `
+}) %>

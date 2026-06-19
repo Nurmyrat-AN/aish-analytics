@@ -1,0 +1,164 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+  maximumFractionDigits: 2 }); } function isActive(name) { return tab===name ? "is-active" : "" ; } %>
+
+  <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+    <div class="page-header">
+      <div>
+        <h1>Товары</h1>
+        <p>Остатки, движение, продажи и покупки</p>
+      </div>
+      ${include("../partials/filters", { filters })}
+    </div>
+
+    <div class="tabs">
+      <a class="tab ${isActive(" stock")}" href="/products?tab=stock&period=${period}">Остатки</a>
+      <a class="tab ${isActive(" negative")}" href="/products?tab=negative&period=${period}">Минусовые остатки</a>
+      <a class="tab ${isActive(" sales")}" href="/products?tab=sales&period=${period}">Продажи</a>
+      <a class="tab ${isActive(" purchases")}" href="/products?tab=purchases&period=${period}">Покупки</a>
+      <a class="tab ${isActive(" movement")}" href="/products?tab=movement&period=${period}">Движение</a>
+    </div>
+
+    ${
+    tab === "stock" ? `
+    <div class="card">
+      <h3>Остатки товаров</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Товар</th>
+            <th>Склад</th>
+            <th>Остаток</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${stock.map(x => `
+          <tr>
+            <td>${x.urun_adi}</td>
+            <td>${x.depo_adi}</td>
+            <td>${money(x.qty)}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "negative" ? `
+    <div class="card">
+      <h3>Минусовые остатки</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Товар</th>
+            <th>Склад</th>
+            <th>Остаток</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${negativeStock.map(x => `
+          <tr>
+            <td>${x.urun_adi}</td>
+            <td>${x.depo_adi}</td>
+            <td class="text-danger">${money(x.qty)}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "sales" ? `
+    <div class="card">
+      <h3>Продажи товаров</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Товар</th>
+            <th>Сумма</th>
+            <th>Кол-во</th>
+            <th>Чеки</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sales.map(x => `
+          <tr>
+            <td>${x.urun_adi}</td>
+            <td>${money(x.total_amount)}</td>
+            <td>${money(x.qty)}</td>
+            <td>${x.check_count}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "purchases" ? `
+    <div class="card">
+      <h3>Покупки товаров</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Товар</th>
+            <th>Сумма</th>
+            <th>Кол-во</th>
+            <th>Документы</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${purchases.map(x => `
+          <tr>
+            <td>${x.urun_adi}</td>
+            <td>${money(x.total_amount)}</td>
+            <td>${money(x.qty)}</td>
+            <td>${x.doc_count}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+
+    ${
+    tab === "movement" ? `
+    <div class="card">
+      <h3>Движение товаров</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Дата</th>
+            <th>Код</th>
+            <th>Тип</th>
+            <th>Товар</th>
+            <th>Склад</th>
+            <th>Кол-во</th>
+            <th>Сумма</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${movement.map(x => `
+          <tr>
+            <td>${x.operation_date || ""}</td>
+            <td>${x.kodu_txt || ""}</td>
+            <td>${x.type_name || x.type_numeric}</td>
+            <td>${x.urun_adi}</td>
+            <td>${x.depo_adi}</td>
+            <td>${money(x.qty_effect)}</td>
+            <td>${money(x.line_total)}</td>
+          </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+    ` : ""
+    }
+    </section>
+    `
+    }) %>

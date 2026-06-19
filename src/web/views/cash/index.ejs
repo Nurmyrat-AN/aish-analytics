@@ -1,0 +1,136 @@
+<%
+function money(value) {
+  return Number(value || 0).toLocaleString("ru-RU", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+function isActive(name) {
+  return tab === name ? "is-active" : "";
+}
+%>
+
+<%- include("../layouts/main", {
+  title,
+  activeMenu,
+  body: `
+    <section class="page">
+      <div class="page-header">
+        <div>
+          <h1>Кассы</h1>
+          <p>Остатки и движение денег</p>
+        </div>
+
+        <form method="GET" action="/cash" class="period-form">
+          <input type="hidden" name="tab" value="${tab}" />
+          <select class="input" name="period" onchange="this.form.submit()">
+            <option value="TODAY" ${period === "TODAY" ? "selected" : ""}>Сегодня</option>
+            <option value="THIS_MONTH" ${period === "THIS_MONTH" ? "selected" : ""}>Этот месяц</option>
+            <option value="LAST_30_DAYS" ${period === "LAST_30_DAYS" ? "selected" : ""}>Последние 30 дней</option>
+            <option value="LAST_90_DAYS" ${period === "LAST_90_DAYS" ? "selected" : ""}>Последние 90 дней</option>
+            <option value="LAST_180_DAYS" ${period === "LAST_180_DAYS" ? "selected" : ""}>Последние 180 дней</option>
+            <option value="LAST_365_DAYS" ${period === "LAST_365_DAYS" ? "selected" : ""}>Последние 365 дней</option>
+            <option value="ALL_TIME" ${period === "ALL_TIME" ? "selected" : ""}>Всё время</option>
+          </select>
+        </form>
+      </div>
+
+      <div class="tabs">
+        <a class="tab ${isActive("balance")}" href="/cash?tab=balance&period=${period}">Остатки</a>
+        <a class="tab ${isActive("movement")}" href="/cash?tab=movement&period=${period}">Движение</a>
+        <a class="tab ${isActive("types")}" href="/cash?tab=types&period=${period}">По типам</a>
+      </div>
+
+      ${
+        tab === "balance" ? `
+          <div class="card">
+            <h3>Остатки по кассам</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Касса</th>
+                  <th>Валюта</th>
+                  <th>Остаток</th>
+                  <th>Операций</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${balance.map(x => `
+                  <tr>
+                    <td>${x.defter_adi}</td>
+                    <td>${x.walyuta_adi}</td>
+                    <td class="${Number(x.balance) < 0 ? "text-danger" : ""}">${money(x.balance)}</td>
+                    <td>${x.operation_count}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "movement" ? `
+          <div class="card">
+            <h3>Движение кассы</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Дата</th>
+                  <th>Тип</th>
+                  <th>Касса</th>
+                  <th>Клиент</th>
+                  <th>Сумма</th>
+                  <th>Влияние</th>
+                  <th>Валюта</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${movement.map(x => `
+                  <tr>
+                    <td>${x.operation_date || ""}</td>
+                    <td>${x.type_name || x.type_numeric}</td>
+                    <td>${x.defter_adi}</td>
+                    <td>${x.kagent_adi}</td>
+                    <td>${money(x.amount)}</td>
+                    <td class="${Number(x.cash_effect) < 0 ? "text-danger" : ""}">${money(x.cash_effect)}</td>
+                    <td>${x.walyuta_adi}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : ""
+      }
+
+      ${
+        tab === "types" ? `
+          <div class="card">
+            <h3>Движение по типам</h3>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Тип</th>
+                  <th>Сумма</th>
+                  <th>Влияние</th>
+                  <th>Операций</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${byType.map(x => `
+                  <tr>
+                    <td>${x.type_name || x.type_numeric}</td>
+                    <td>${money(x.total_amount)}</td>
+                    <td class="${Number(x.total_effect) < 0 ? "text-danger" : ""}">${money(x.total_effect)}</td>
+                    <td>${x.operation_count}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        ` : ""
+      }
+    </section>
+  `
+}) %>

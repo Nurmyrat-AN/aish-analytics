@@ -1,0 +1,214 @@
+<% function money(value) { return Number(value || 0).toLocaleString("ru-RU", { minimumFractionDigits: 2,
+    maximumFractionDigits: 2 }); } function isActive(name) { return tab===name ? "is-active" : "" ; } %>
+
+    <%- include("../layouts/main", { title, activeMenu, body: ` <section class="page">
+        <div class="page-header">
+            <div>
+                <h1>Прибыль</h1>
+                <p>Расчёт прибыли по методу CARD</p>
+            </div>
+
+            ${include("../partials/filters", { filters })}
+        </div>
+
+        <div class="tabs">
+            <a class="tab ${isActive(" products")}" href="/profit?tab=products&period=${period}">По товарам</a>
+            <a class="tab ${isActive(" customers")}" href="/profit?tab=customers&period=${period}">По клиентам</a>
+            <a class="tab ${isActive(" sellers")}" href="/profit?tab=sellers&period=${period}">По продавцам</a>
+            <a class="tab ${isActive(" below_cost")}" href="/profit?tab=below_cost&period=${period}">Ниже
+                себестоимости</a>
+            <a class="tab ${isActive(" lines")}" href="/profit?tab=lines&period=${period}">Строки продаж</a>
+        </div>
+
+        <div class="grid grid-4">
+            <div class="card">
+                <div class="card__label">Продажи</div>
+                <div class="card__value">${money(summary.sale_amount)}</div>
+            </div>
+
+            <div class="card">
+                <div class="card__label">Себестоимость</div>
+                <div class="card__value">${money(summary.cost_amount)}</div>
+            </div>
+
+            <div class="card">
+                <div class="card__label">Прибыль</div>
+                <div class="card__value">${money(summary.profit_amount)}</div>
+            </div>
+
+            <div class="card">
+                <div class="card__label">Маржа</div>
+                <div class="card__value">${money(summary.profit_percent)}%</div>
+            </div>
+        </div>
+
+        ${
+        tab === "products" ? `
+        <div class="card">
+            <h3>Прибыль по товарам</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Продажи</th>
+                        <th>Себестоимость</th>
+                        <th>Прибыль</th>
+                        <th>Маржа %</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${byProduct.map(x => `
+                    <tr>
+                        <td>${x.urun_adi}</td>
+                        <td>${money(x.qty)}</td>
+                        <td>${money(x.sale_amount)}</td>
+                        <td>${money(x.cost_amount)}</td>
+                        <td class="${Number(x.profit_amount) < 0 ? " text-danger" : "" }">${money(x.profit_amount)}</td>
+                        <td>${money(x.profit_percent)}%</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+        ` : ""
+        }
+
+        ${
+        tab === "customers" ? `
+        <div class="card">
+            <h3>Прибыль по клиентам</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Продажи</th>
+                        <th>Себестоимость</th>
+                        <th>Прибыль</th>
+                        <th>Маржа %</th>
+                        <th>Чеки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${byCustomer.map(x => `
+                    <tr>
+                        <td>${x.kagent_adi}</td>
+                        <td>${money(x.sale_amount)}</td>
+                        <td>${money(x.cost_amount)}</td>
+                        <td class="${Number(x.profit_amount) < 0 ? " text-danger" : "" }">${money(x.profit_amount)}</td>
+                        <td>${money(x.profit_percent)}%</td>
+                        <td>${x.check_count}</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+        ` : ""
+        }
+
+        ${
+        tab === "sellers" ? `
+        <div class="card">
+            <h3>Прибыль по продавцам</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Продавец</th>
+                        <th>Продажи</th>
+                        <th>Себестоимость</th>
+                        <th>Прибыль</th>
+                        <th>Маржа %</th>
+                        <th>Чеки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${bySeller.map(x => `
+                    <tr>
+                        <td>${x.satici_adi}</td>
+                        <td>${money(x.sale_amount)}</td>
+                        <td>${money(x.cost_amount)}</td>
+                        <td class="${Number(x.profit_amount) < 0 ? " text-danger" : "" }">${money(x.profit_amount)}</td>
+                        <td>${money(x.profit_percent)}%</td>
+                        <td>${x.check_count}</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+        ` : ""
+        }
+
+        ${
+        tab === "below_cost" ? `
+        <div class="card">
+            <h3>Продажи ниже себестоимости</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Код</th>
+                        <th>Товар</th>
+                        <th>Клиент</th>
+                        <th>Продавец</th>
+                        <th>Кол-во</th>
+                        <th>Продажа</th>
+                        <th>Себест.</th>
+                        <th>Убыток</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${belowCost.map(x => `
+                    <tr>
+                        <td>${x.operation_date || ""}</td>
+                        <td>${x.kodu_txt || ""}</td>
+                        <td>${x.urun_adi}</td>
+                        <td>${x.kagent_adi}</td>
+                        <td>${x.satici_adi}</td>
+                        <td>${money(x.qty)}</td>
+                        <td>${money(x.sale_amount)}</td>
+                        <td>${money(x.cost_amount)}</td>
+                        <td class="text-danger">${money(x.profit_amount)}</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+        ` : ""
+        }
+
+        ${
+        tab === "lines" ? `
+        <div class="card">
+            <h3>Строки продаж</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Код</th>
+                        <th>Товар</th>
+                        <th>Кол-во</th>
+                        <th>Продажа</th>
+                        <th>Себест.</th>
+                        <th>Прибыль</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows.map(x => `
+                    <tr>
+                        <td>${x.operation_date || ""}</td>
+                        <td>${x.kodu_txt || ""}</td>
+                        <td>${x.urun_adi}</td>
+                        <td>${money(x.qty)}</td>
+                        <td>${money(x.sale_amount)}</td>
+                        <td>${money(x.cost_amount)}</td>
+                        <td class="${Number(x.profit_amount) < 0 ? " text-danger" : "" }">${money(x.profit_amount)}</td>
+                    </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+        </div>
+        ` : ""
+        }
+        </section>
+        `
+        }) %>
