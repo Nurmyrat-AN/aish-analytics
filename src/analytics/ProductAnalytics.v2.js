@@ -2,8 +2,8 @@ const db = require("../config/sqlite");
 
 
 function stock(params = {}) {
-  const where = ["COALESCE(t.sluj_is_yanlis, 0) = 0", 'u.adi LIKE ?'];
-  const values = ['%hdw%'];
+  const where = ["COALESCE(t.sluj_is_yanlis, 0) = 0"];
+  const values = [];
 
   if (params.urunId) {
     where.push("tl.urun_id = ?");
@@ -15,6 +15,7 @@ function stock(params = {}) {
     values.push(params.depoId);
   }
 
+
   return db.prepare(`
     SELECT 
       tl.urun_id AS urun_id,
@@ -23,7 +24,7 @@ function stock(params = {}) {
       d.adi AS depo_adi,
       COALESCE(SUM(tl.base_unit_qty_total * 
         CASE WHEN d.id = t.id_depo1 THEN tt.warehouse_1_effect_ratio
-           WHEN d.id = t.id_depo2 THEN tt.warehouse_2_effect_ratio
+           WHEN d.id = t.id_depo2 AND tt.type_numeric=601 THEN tt.warehouse_2_effect_ratio
            ELSE 0 END
       ), 0) AS qty,
 
