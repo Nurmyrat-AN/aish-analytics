@@ -7,6 +7,7 @@ const cashboxRoutes = require("./cash");
 const warehousesRoutes = require("./warehouses");
 const biRoutes = require("./bi");
 const profitRoutes = require("./profit");
+const productsApiRoutes = require("./api/productsApi");
 
 function registerRoutes(app) {
   app.use("/", dashboardRoutes);
@@ -18,6 +19,7 @@ function registerRoutes(app) {
   app.use("/", warehousesRoutes);
   app.use("/", biRoutes);
   app.use("/", profitRoutes);
+  app.use("/", productsApiRoutes);
 }
 
 module.exports = registerRoutes;
