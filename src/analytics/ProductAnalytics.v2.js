@@ -3,7 +3,7 @@ const db = require("../config/sqlite");
 
 function stock(params = {}) {
   const where = ["COALESCE(t.sluj_is_yanlis, 0) = 0", 'u.adi LIKE ?'];
-  const values = ['%kms%'];
+  const values = ['%hdw%'];
 
   if (params.urunId) {
     where.push("tl.urun_id = ?");
