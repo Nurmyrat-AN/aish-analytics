@@ -3,6 +3,6 @@ const { couchdb } = require("./env");
 
 const couch = new nano(`${couchdb.url}`);
 
-const db = couch.server.use(couchdb.dbName);
+const db = couch.db.use(couchdb.dbName);
 
 module.exports = db;

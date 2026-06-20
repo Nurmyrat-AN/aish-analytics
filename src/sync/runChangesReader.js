@@ -1,5 +1,6 @@
 const couchDb = require("../config/couchdb");
-const { syncBatch, loadKeys } = require("./syncManager");
+const { skippedTypes } = require("./handlers");
+const { syncBatch, loadKeys, testDocById } = require("./syncManager");
 const { getLastSeq, setLastSeq } = require("./syncMeta");
 
 function startChangesReader() {
@@ -14,6 +15,8 @@ function startChangesReader() {
         batchSize: 1000,
     });
 
+    // testDocById(couchDb, 'zarf-nvfew_cec42aca-cc9f-4518-8918-ddf9a523cb00')
+
     reader.on("batch", async (changes) => {
         const docs = changes.map((change) => change.doc).filter(Boolean);
 
@@ -23,6 +26,7 @@ function startChangesReader() {
         if (lastChange && lastChange.seq) {
             setLastSeq(lastChange.seq);
         }
+
 
         // if (docs.length < 1000) {
         //     console.log("Skipped types:", skippedTypes);

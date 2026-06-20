@@ -26,6 +26,9 @@ async function handleDocument(doc) {
 
     if (!handler) {
         saveUnknownDocument(doc);
+        skippedTypes.push({
+            [doc.$dokuman_tipi]: doc
+        })
         return {
             skipped: true,
             reason: "NO_HANDLER",

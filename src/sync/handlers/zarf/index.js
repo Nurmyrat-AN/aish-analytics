@@ -2,6 +2,7 @@ const { mapZarf } = require("./mapper");
 const { saveZarfTransactions } = require("./repository");
 
 async function sync(doc) {
+
   const { transactions, lines } = mapZarf(doc);
 
   saveZarfTransactions(transactions, lines);

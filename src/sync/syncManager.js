@@ -110,8 +110,24 @@ function verKeyForDto(id) {
     return key2020.substring(16) + id;
 }
 
+function testDocById(couchDb, id) {
+    couchDb.get(id).then((doc) => {
+        const dtoKey = verKeyForDto(doc._id);
+
+        const decrypted = decryptAES(dtoKey, doc.load);
+        try {
+            doc = { ...doc, ...JSON.parse(decrypted) };
+            delete doc['load'];
+        } catch (e) {
+            throw e
+        }
+        console.log(doc)
+    })
+}
+
 module.exports = {
     syncDocument,
     syncBatch,
     loadKeys,
+    testDocById
 };

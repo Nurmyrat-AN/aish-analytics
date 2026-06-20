@@ -15,4 +15,18 @@ router.get("/api/products/stock", (req, res) => {
   });
 });
 
+router.get("/api/products/transactions/:urunId", (req, res) => {
+  const rows = ProductAnalytics.transactions({
+    depoId: req.query.depoId || "",
+    urunId: req.params.urunId,
+    limit: Number(req.query.limit || 10),
+  });
+
+  res.json({
+    success: true,
+    count: rows.length,
+    data: rows,
+  });
+})
+
 module.exports = router;

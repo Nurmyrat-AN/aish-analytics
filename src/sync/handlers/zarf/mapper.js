@@ -9,13 +9,8 @@ function makeTransactionId(zarfId, sourceType, index, subIndex = 0) {
   return `${zarfId}-${sourceType}-${index}-${subIndex}`;
 }
 
-let yanlisSayisi = 0;
 
 function mapFatura(zarf, fatura, index) {
-  if (fatura.sluj_isYanlis === 1) {
-    yanlisSayisi++
-  }
-  console.log('Yanlis Sayisi: ', yanlisSayisi)
   return {
     id: makeTransactionId(zarf._id, "fatura", index),
 
@@ -73,9 +68,9 @@ function mapFatura(zarf, fatura, index) {
     sluj_id_hangi_faturaya_ait: null,
     sluj_hangi_terminalden_yapildi:
       fatura.sluj_hangiTerminaldenYapildi || null,
-    sluj_is_yanlis: safeNumber(fatura.sluj_isYanlis),
-    sluj_satici_id: fatura.sluj_saticiId || null,
-    sluj_yln_bellik: fatura.sluj_ylnBellik || null,
+    sluj_is_yanlis: (zarf.yln_bellik ? 1 : 0),
+    sluj_satici_id: zarf.yln_isci || fatura.sluj_saticiId || null,
+    sluj_yln_bellik: zarf.yln_bellik || fatura.sluj_ylnBellik || null,
 
     bellik: fatura.Bellik || null,
     status_is_aktif: safeNumber(fatura.StatusIsAktif),
@@ -148,9 +143,9 @@ function mapKasaIslemi(zarf, kasa, index, subIndex = 0) {
     sluj_id_hangi_faturaya_ait: kasa.sluj_IdHangiFaturayaAit || null,
     sluj_hangi_terminalden_yapildi:
       kasa.sluj_hangiTerminaldenYapildi || null,
-    sluj_is_yanlis: safeNumber(kasa.sluj_isYanlis),
-    sluj_satici_id: kasa.sluj_saticiId || null,
-    sluj_yln_bellik: kasa.sluj_ylnBellik || null,
+    sluj_is_yanlis: (zarf.yln_bellik ? 1 : 0),
+    sluj_satici_id: zarf.yln_isci || kasa.sluj_saticiId || null,
+    sluj_yln_bellik: zarf.yln_bellik || kasa.sluj_ylnBellik || null,
 
     bellik: kasa.Bellik || null,
     status_is_aktif: safeNumber(kasa.StatusIsAktif),

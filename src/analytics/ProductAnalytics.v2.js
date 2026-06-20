@@ -51,7 +51,9 @@ function stock(params = {}) {
     const existing = acc.find(r => r.urun_id === row.urun_id);
     if (existing) {
       existing.qty += row.qty;
-      existing.stoct.push({ depo_adi: row.depo_adi, qty: row.qty });
+      if (row.qty > 0) {
+        existing.stoct.push({ depo_adi: row.depo_adi, qty: row.qty });
+      }
     } else {
       acc.push({
         urun_id: row.urun_id,
@@ -59,33 +61,69 @@ function stock(params = {}) {
         urun_birim: row.urun_birim,
         barkod: JSON.parse(row.barkod),
         qty: row.qty,
-        stoct: [{ depo_adi: row.depo_adi, qty: row.qty }]
+        stoct: row.qty > 0 ? [{ depo_adi: row.depo_adi, qty: row.qty }] : []
       });
     }
     return acc;
   }, []);
+}
+
+function transactions(params = {}) {
+  const where = ["COALESCE(t.sluj_is_yanlis, 0) = 0"];
+  const values = [];
+
+  if (!params.urunId) {
+    throw "No urun id"
+  }
+
+  if (params.depoId) {
+    where.push("t.id_depo1 = ?");
+    values.push(params.depoId);
+  }
 
   return db.prepare(`
-    SELECT
-      tl.urun_id,
-      COALESCE(u.adi, tl.urun_id, 'Без товара') AS urun_adi,
-      t.id_depo1 AS depo_id,
-      COALESCE(d.adi, t.id_depo1, 'Без склада') AS depo_adi,
-      COALESCE(SUM(tl.base_unit_qty_total * tt.warehouse_1_effect_ratio), 0) AS qty
-    FROM transaction_lines tl
-    JOIN transactions t ON t.id = tl.transaction_id
-    JOIN transaction_type tt
-      ON tt.source_type = t.source_type
-     AND tt.type_numeric = t.type_numeric
-    LEFT JOIN urun u ON u.id = tl.urun_id
-    LEFT JOIN depo d ON d.id = t.id_depo1
-    WHERE ${where.join(" AND ")}
-    GROUP BY tl.urun_id, t.id_depo1
-    ORDER BY urun_adi
-    LIMIT ?
-  `).all(...values, params.limit || 500);
+      SELECT 
+      
+      t.kodu_txt,
+      tt.type_name,
+      t.type_numeric,
+      tl.base_unit_qty_total,
+      d1.adi depo1,
+      d2.adi depo2,
+      t.operation_date date,
+      (
+        SELECT SUM(itl.base_unit_qty_total * 
+          (
+            CASE WHEN itt.type_numeric=601 THEN 0
+            
+            ELSE  itt.warehouse_1_effect_ratio END
+          )
+        ) 
+        FROM transaction_lines itl
+        JOIN transactions it ON it.id = itl.transaction_id
+        JOIN transaction_type itt
+          ON itt.source_type = it.source_type
+          AND itt.type_numeric = it.type_numeric
+
+        
+        WHERE itl.urun_id = ? AND it.operation_date<=t.operation_date AND it.sluj_is_yanlis=0
+      ) AS ost
+
+      FROM transaction_lines tl
+      JOIN transactions t ON t.id = tl.transaction_id
+      JOIN transaction_type tt
+        ON tt.source_type = t.source_type
+      AND tt.type_numeric = t.type_numeric
+      JOIN depo d1 ON t.id_depo1=d1.id
+      JOIN depo d2 ON t.id_depo2=d2.id
+
+      WHERE tl.urun_id= ? AND t.sluj_is_yanlis=0
+
+      ORDER BY t.operation_date DESC
+    `).all(params.urunId, params.urunId);
 }
 
 module.exports = {
   stock,
+  transactions
 };
